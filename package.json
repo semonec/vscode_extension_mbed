@@ -1,0 +1,43 @@
+{
+    "name": "vscode-mbed",
+    "displayName": "vscode-mbed",
+    "description": "VSCode extension for MBED",
+    "version": "0.0.1",
+    "publisher": "semonec",
+    "engines": {
+        "vscode": "^1.17.0"
+    },
+    "categories": [
+        "Other"
+    ],
+    "activationEvents": [
+        "*"
+    ],
+    "main": "./out/extension",
+    "contributes": {
+        "commands": [
+            {
+                "command": "extension.mbed.new",
+                "title": "MBED: Create new project"
+            }
+        ]
+    },
+    "scripts": {
+        "vscode:prepublish": "npm run compile",
+        "compile": "tsc -p ./",
+        "watch": "tsc -watch -p ./",
+        "postinstall": "node ./node_modules/vscode/bin/install",
+        "test": "npm run compile && node ./node_modules/vscode/bin/test"
+    },
+    "devDependencies": {
+        "typescript": "^2.5.3",
+        "vscode": "^1.1.5",
+        "@types/node": "^7.0.43",
+        "@types/mocha": "^2.2.42",
+        "spawn-command": "0.0.2-1"
+    },
+    "dependencies": {
+        "spawn-command": "0.0.2-1"
+    }
+
+}
