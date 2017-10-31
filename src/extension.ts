@@ -18,32 +18,31 @@ export function activate(context: vscode.ExtensionContext) {
     // status bar item add
     compileIcon = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left);
     compileIcon.text = `$(diff-renamed) compile`;
-    compileIcon.show();
     compileIcon.tooltip = 'Compile current mbed project';
+    compileIcon.command = 'extension.mbed.compile';    
+    compileIcon.show();
 
     flashIcon = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left);
     flashIcon.text = `$(circuit-board) flash`;
     flashIcon.tooltip = 'Flash complied mbed binary into board';
+    flashIcon.command = 'extension.mbed.flash';        
     flashIcon.show();
 
     logIcon = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left);
-    logIcon.text = `$(device-desktop) show output`;
-    logIcon.tooltip = 'Show output mbed board';
+    logIcon.text = `$(plug) serial monitor`;
+    logIcon.tooltip = 'Open serial monitor';
+    logIcon.command = 'extensio.mbed.serialMonitor';
     logIcon.show();
 
-    commandOutput = vscode.window.createOutputChannel('MBED output');
+    commandOutput = vscode.window.createOutputChannel('mbed tasks');
     context.subscriptions.push(commandOutput);    
     // add 'mbed new'
     context.subscriptions.push(vscode.commands.registerCommand('extension.mbed.new', () => {
-        // The code you place here will be executed every time your command is executed
-
-        // Display a message box to the user
         const openDialogOptions= {
             canSelectMany: false,
             canSelectFiles: false,
             canSelectFolders: true
         };
-
         vscode.window.showOpenDialog(openDialogOptions).then((uris) => {
             if (uris === undefined || uris.length !== 1) {
                 vscode.window.showErrorMessage('Please select one folder for create MBED project');
@@ -62,6 +61,14 @@ export function activate(context: vscode.ExtensionContext) {
                 mbedNewProject(uri, prjName);
             });
         });
+    }));
+    context.subscriptions.push(vscode.commands.registerCommand('extension.mbed.compile', () => {
+        mbedCompileProject();
+    }));
+    context.subscriptions.push(vscode.commands.registerCommand('extension.mbed.flash', () => {
+        mbedCompileAndFlashProject();
+    }));
+    context.subscriptions.push(vscode.commands.registerCommand('extension.mbed.serialMonitor', () => {
     }));
 }
 
@@ -106,6 +113,40 @@ export function mbedNewProject(path: vscode.Uri, prjName: string) {
                 .then(() => {
                     exec(`code ${prjName}`, path.path);
                 });
+        }).catch((reason) => {
+            commandOutput.appendLine(`> ERROR: ${reason}`);
+            vscode.window.showErrorMessage(reason, 'Show Output')
+            .then((action) => { commandOutput.show(); });
+        });
+}
+
+export function mbedCompileProject() {
+    const cmd = `mbed compile -t GCC_ARM -m auto`;
+    const folder = vscode.workspace.workspaceFolders;
+    if (vscode.workspace.workspaceFolders === undefined || vscode.workspace.workspaceFolders.length === 0) {
+        return;
+    }
+    const path = vscode.workspace.workspaceFolders[0].uri.path;
+    exec(cmd, path)
+        .then(() => {
+            vscode.window.showInformationMessage(`Successfully complied`)
+        }).catch((reason) => {
+            commandOutput.appendLine(`> ERROR: ${reason}`);
+            vscode.window.showErrorMessage(reason, 'Show Output')
+            .then((action) => { commandOutput.show(); });
+        });
+}
+
+export function mbedCompileAndFlashProject() {
+    const cmd = `mbed compile -t GCC_ARM -m auto -f`;
+    const folder = vscode.workspace.workspaceFolders;
+    if (vscode.workspace.workspaceFolders === undefined || vscode.workspace.workspaceFolders.length === 0) {
+        return;
+    }
+    const path = vscode.workspace.workspaceFolders[0].uri.path;
+    exec(cmd, path)
+        .then(() => {
+            vscode.window.showInformationMessage(`Successfully complied`)
         }).catch((reason) => {
             commandOutput.appendLine(`> ERROR: ${reason}`);
             vscode.window.showErrorMessage(reason, 'Show Output')

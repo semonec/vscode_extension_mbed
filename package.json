@@ -25,6 +25,18 @@
             {
                 "command": "extension.mbed.new",
                 "title": "MBED: Create new project"
+            },
+            {
+                "command": "extension.mbed.compile",
+                "title": "MBED: Compile current project"
+            },
+            {
+                "command": "extension.mbed.flash",
+                "title": "MBED: Flash current project's binary into board"
+            },
+            {
+                "command": "extension.mbed.serialMonitor",
+                "title": "MBED: Open Serial Monitor"
             }
         ]
     },
@@ -44,6 +56,8 @@
     },
     "dependencies": {
         "spawn-command": "0.0.2-1"
-    }
-
+    },
+    "extensionDependencies": [
+        "ms-vscode.cpptools"
+    ]
 }
