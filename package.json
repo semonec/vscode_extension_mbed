@@ -2,11 +2,25 @@
     "name": "vscode-mbed",
     "displayName": "vscode-mbed",
     "description": "VSCode extension for ARMmbed",
-    "version": "0.1.0",
+    "version": "0.1.1",
     "publisher": "semonec",
+    "license": "Apache-2.0",    
     "engines": {
         "vscode": "^1.17.0"
     },
+    "keywords": [
+        "IoT",
+        "embedded",
+        "firmware",
+        "mbed",
+        "arm"
+    ],
+    "author": {
+        "name": "Semoon Park",
+        "email": "semonec@gmail.com",
+        "url": "https://github.com/semonec/vscode_extension_mbed"
+    },
+    "icon": "images/icon.png",    
     "bugs": {
         "url": "https://github.com/semonec/vscode_extension_mbed/issues",
         "email": "semonec@gmail.com"
