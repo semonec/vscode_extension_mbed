@@ -6,11 +6,32 @@ import * as vscode from 'vscode';
 // this method is called when your extension is activated
 // your extension is activated the very first time the command is executed
 let commandOutput = null;
-let spawnCMD = require('spawn-command');
+let compileIcon: vscode.StatusBarItem;
+let flashIcon: vscode.StatusBarItem;
+let logIcon: vscode.StatusBarItem;
+
+const spawnCMD = require('spawn-command');
 
 export function activate(context: vscode.ExtensionContext) {
     console.log('Congratulations, your extension "vscode-mbed" is now active!');
-    commandOutput = vscode.window.createOutputChannel('Shell');
+
+    // status bar item add
+    compileIcon = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left);
+    compileIcon.text = `$(diff-renamed) compile`;
+    compileIcon.show();
+    compileIcon.tooltip = 'Compile current mbed project';
+
+    flashIcon = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left);
+    flashIcon.text = `$(circuit-board) flash`;
+    flashIcon.tooltip = 'Flash complied mbed binary into board';
+    flashIcon.show();
+
+    logIcon = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left);
+    logIcon.text = `$(device-desktop) show output`;
+    logIcon.tooltip = 'Show output mbed board';
+    logIcon.show();
+
+    commandOutput = vscode.window.createOutputChannel('MBED output');
     context.subscriptions.push(commandOutput);    
     // add 'mbed new'
     context.subscriptions.push(vscode.commands.registerCommand('extension.mbed.new', () => {
@@ -46,7 +67,7 @@ export function activate(context: vscode.ExtensionContext) {
 
 export function run(cmd:string, cwd:string): Promise<void> {
     return new Promise((accept, reject) => {
-        var opts : any = {};
+        let opts : any = {};
         if (vscode.workspace) {
         opts.cwd = cwd;
         }
@@ -72,7 +93,8 @@ export function exec(cmd:string, cwd:string): Promise<void> {
         return;
     }
     commandOutput.clear();
-    commandOutput.appendLine(`> Running \`${cmd}\`...`)
+    commandOutput.show();
+    commandOutput.appendLine(`> Running \`${cmd}\`...`);
     return run(cmd, cwd);
 }
 
