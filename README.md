@@ -1,5 +1,7 @@
 # MBED for VSCode 
 
+[![Marketplace Version](https://vsmarketplacebadge.apphb.com/version-short/semonec.vscode-mbed.svg)](https://marketplace.visualstudio.com/items?itemName=semonec.vscode-mbed) [![Installs](https://vsmarketplacebadge.apphb.com/installs-short/semonec.vscode-mbed.svg)](https://marketplace.visualstudio.com/items?itemName=semonec.vscode-mbed) [![Rating](https://vsmarketplacebadge.apphb.com/rating-short/semonec.vscode-mbed.svg)](https://marketplace.visualstudio.com/items?itemName=semonec.vscode-mbed)
+
 This extension is for ARM mbed development.
 
 Check  [MBED cli](https://github.com/ARMmbed/mbed-cli)
