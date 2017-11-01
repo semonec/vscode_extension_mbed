@@ -13,11 +13,17 @@ let logIcon: vscode.StatusBarItem;
 const spawnCMD = require('spawn-command');
 
 export function activate(context: vscode.ExtensionContext) {
-    console.log('Congratulations, your extension "vscode-mbed" is now active!');
-
+    checkMbedInstalled()
+    .then(() => {
+        console.log('Installed mbed');
+    })
+    .catch(() => {
+        console.log('You must install mbed first');
+        vscode.window.showWarningMessage('You must install mbed.');
+    })
     // status bar item add
     compileIcon = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left);
-    compileIcon.text = `$(diff-renamed) compile`;
+    compileIcon.text = `$(package) compile`;
     compileIcon.tooltip = 'Compile current mbed project';
     compileIcon.command = 'extension.mbed.compile';    
     compileIcon.show();
@@ -29,7 +35,7 @@ export function activate(context: vscode.ExtensionContext) {
     flashIcon.show();
 
     logIcon = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left);
-    logIcon.text = `$(plug) serial monitor`;
+    logIcon.text = `$(terminal) serial monitor`;
     logIcon.tooltip = 'Open serial monitor';
     logIcon.command = 'extensio.mbed.serialMonitor';
     logIcon.show();
@@ -85,12 +91,12 @@ export function run(cmd:string, cwd:string): Promise<void> {
         process.stdout.on('data', printOutput);
         process.stderr.on('data', printOutput);
         process.on('close', (status) => {
-        if (status) {
-            reject(`Command \`${cmd}\` exited with status code ${status}.`);
-        } else {
-            accept();
-        }
-        process = null;
+            if (status) {
+                reject(`Command \`${cmd}\` exited with status code ${status}.`);
+            } else {
+                accept();
+            }
+            process = null;
         });
     });
 }
@@ -103,6 +109,20 @@ export function exec(cmd:string, cwd:string): Promise<void> {
     commandOutput.show();
     commandOutput.appendLine(`> Running \`${cmd}\`...`);
     return run(cmd, cwd);
+}
+
+export function checkMbedInstalled(): Promise<void> {
+    return new Promise((resolve, reject) => {
+        process = spawnCMD('which mbed');
+        process.on('close', (status) => {
+            if (status) {
+                reject(`error`);
+            } else {
+                resolve();
+            }
+            process = null;     
+        });
+    });
 }
 
 export function mbedNewProject(path: vscode.Uri, prjName: string) {
@@ -120,12 +140,28 @@ export function mbedNewProject(path: vscode.Uri, prjName: string) {
         });
 }
 
-export function mbedCompileProject() {
-    const cmd = `mbed compile -t GCC_ARM -m auto`;
-    const folder = vscode.workspace.workspaceFolders;
-    if (vscode.workspace.workspaceFolders === undefined || vscode.workspace.workspaceFolders.length === 0) {
-        return;
+export function generateCommand(): string {
+    const mcu = vscode.workspace.getConfiguration('mbed').get('mcu');
+    const toolchain = vscode.workspace.getConfiguration('mbed').get('toolchain');
+    const source = vscode.workspace.getConfiguration('mbed').get('source');
+    const build = vscode.workspace.getConfiguration('mbed').get('build');
+    const profile = vscode.workspace.getConfiguration('mbed').get('profile');
+    const library = vscode.workspace.getConfiguration('mbed').get('library');
+    
+    let cmd = `mbed compile -t ${toolchain} -m ${mcu} --source ${source} --build ${build}`;
+    if (profile !== '') {
+        cmd = cmd.concat(` --profile ${profile}`);
     }
+    if (library) {
+        cmd = cmd.concat(' --library');
+    }
+    return cmd;
+}
+
+export function mbedCompileProject() {
+    const cmd = generateCommand();
+    const folder = vscode.workspace.workspaceFolders;
+
     const path = vscode.workspace.workspaceFolders[0].uri.path;
     exec(cmd, path)
         .then(() => {
@@ -138,11 +174,9 @@ export function mbedCompileProject() {
 }
 
 export function mbedCompileAndFlashProject() {
-    const cmd = `mbed compile -t GCC_ARM -m auto -f`;
+    const cmd = generateCommand();
     const folder = vscode.workspace.workspaceFolders;
-    if (vscode.workspace.workspaceFolders === undefined || vscode.workspace.workspaceFolders.length === 0) {
-        return;
-    }
+
     const path = vscode.workspace.workspaceFolders[0].uri.path;
     exec(cmd, path)
         .then(() => {

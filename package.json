@@ -2,7 +2,7 @@
     "name": "vscode-mbed",
     "displayName": "vscode-mbed",
     "description": "VSCode extension for ARMmbed",
-    "version": "0.1.2",
+    "version": "0.2.0",
     "publisher": "semonec",
     "license": "Apache-2.0",
     "engines": {
@@ -34,7 +34,10 @@
         "Other"
     ],
     "activationEvents": [
-        "*"
+        "onCommand:extension.mbed.new",
+        "workspaceContains:**/.mbed",
+        "workspaceContains:**/.mbed_settings.py",
+        "workspaceContains:**/mbed_app.json"
     ],
     "main": "./out/extension",
     "contributes": {
@@ -55,7 +58,53 @@
                 "command": "extension.mbed.serialMonitor",
                 "title": "MBED: Open serial monitor"
             }
-        ]
+        ],
+        "configuration": {
+            "type": "object",
+            "title": "VS Code mbed configuration",
+            "properties": {
+                "mbed.mcu": {
+                    "type": "string",
+                    "description": "if 'detect' or 'auto' is selected, then Mbed CLI detectes the connected target (argument for -m <MCU>)",
+                    "default": "auto"
+                },
+                "mbed.toolchain": {
+                    "type": "string",
+                    "description": "Select a toolchain (argument for -t <TOOLCHAIN>)",
+                    "enum": [
+                        "ARM",
+                        "GCC_ARM",
+                        "IAR"
+                    ],
+                    "enumDescription": [
+                        "Arm Compiler5",
+                        "GNU Arm Embedded (default)",
+                        "IAR Embedded Workbench for Arm"
+                    ],
+                    "default": "GCC_ARM"
+                },
+                "mbed.source": {
+                    "type": "string",
+                    "description": "Select the source directory. The default is '.' (the current directory).\nYou can specify multiple source locations, even outside the program tree. (argument for --source <SOURCE>)",
+                    "default": "."
+                },
+                "mbed.build": {
+                    "type": "string",
+                    "description": "Select the build directory, Default: BUILD/ inside your program root. (argument for --build <BUILD>",
+                    "default": "BUILD/"
+                },
+                "mbed.profile": {
+                    "type": "string",
+                    "description": "Select a path to a build profile configuration file (argument for --profile <PATH_TO_BUILD_PROFILE>",
+                    "default": ""
+                },
+                "mbed.library": {
+                    "type": "boolean",
+                    "description": "Compile the code as a static .a/.ar library",
+                    "default": false
+                }
+            }
+        }
     },
     "scripts": {
         "vscode:prepublish": "npm run compile",
