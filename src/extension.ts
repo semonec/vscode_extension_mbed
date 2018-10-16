@@ -174,7 +174,7 @@ export function mbedCompileProject() {
 }
 
 export function mbedCompileAndFlashProject() {
-    const cmd = generateCommand(); 
+    const cmd = generateCommand() + ' -f'; 
     const folder = vscode.workspace.workspaceFolders;
 
     const path = vscode.workspace.workspaceFolders[0].uri.fsPath;
