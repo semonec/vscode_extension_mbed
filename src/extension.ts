@@ -113,7 +113,7 @@ export function exec(cmd:string, cwd:string): Promise<void> {
 
 export function checkMbedInstalled(): Promise<void> {
     return new Promise((resolve, reject) => {
-        process = spawnCMD('which mbed');
+        process = (process.platform === 'win32') ? spawnCMD('where mbed') : spawnCMD('which mbed');
         process.on('close', (status) => {
             if (status) {
                 reject(`error`);
@@ -162,7 +162,7 @@ export function mbedCompileProject() {
     const cmd = generateCommand();
     const folder = vscode.workspace.workspaceFolders;
 
-    const path = vscode.workspace.workspaceFolders[0].uri.path;
+    const path = vscode.workspace.workspaceFolders[0].uri.fsPath;
     exec(cmd, path)
         .then(() => {
             vscode.window.showInformationMessage(`Successfully complied`)
@@ -174,10 +174,10 @@ export function mbedCompileProject() {
 }
 
 export function mbedCompileAndFlashProject() {
-    const cmd = generateCommand();
+    const cmd = generateCommand(); 
     const folder = vscode.workspace.workspaceFolders;
 
-    const path = vscode.workspace.workspaceFolders[0].uri.path;
+    const path = vscode.workspace.workspaceFolders[0].uri.fsPath;
     exec(cmd, path)
         .then(() => {
             vscode.window.showInformationMessage(`Successfully complied`)
