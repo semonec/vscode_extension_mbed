@@ -37,7 +37,7 @@ export function activate(context: vscode.ExtensionContext) {
     logIcon = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left);
     logIcon.text = `$(terminal) serial monitor`;
     logIcon.tooltip = 'Open serial monitor';
-    logIcon.command = 'extensio.mbed.serialMonitor';
+    logIcon.command = 'extension.mbed.serialMonitor';
     logIcon.show();
 
     commandOutput = vscode.window.createOutputChannel('mbed tasks');
