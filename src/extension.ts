@@ -30,14 +30,14 @@ export function activate(context: vscode.ExtensionContext) {
 
     flashIcon = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left);
     flashIcon.text = `$(circuit-board) flash`;
-    flashIcon.tooltip = 'Flash complied mbed binary into board';
+    flashIcon.tooltip = 'Flash compiled mbed binary into board';
     flashIcon.command = 'extension.mbed.flash';        
     flashIcon.show();
 
     logIcon = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left);
     logIcon.text = `$(terminal) serial monitor`;
     logIcon.tooltip = 'Open serial monitor';
-    logIcon.command = 'extensio.mbed.serialMonitor';
+    logIcon.command = 'extension.mbed.serialMonitor';
     logIcon.show();
 
     commandOutput = vscode.window.createOutputChannel('mbed tasks');
@@ -113,7 +113,7 @@ export function exec(cmd:string, cwd:string): Promise<void> {
 
 export function checkMbedInstalled(): Promise<void> {
     return new Promise((resolve, reject) => {
-        process = spawnCMD('which mbed');
+        process = (process.platform === 'win32') ? spawnCMD('where mbed') : spawnCMD('which mbed');
         process.on('close', (status) => {
             if (status) {
                 reject(`error`);
@@ -162,10 +162,10 @@ export function mbedCompileProject() {
     const cmd = generateCommand();
     const folder = vscode.workspace.workspaceFolders;
 
-    const path = vscode.workspace.workspaceFolders[0].uri.path;
+    const path = vscode.workspace.workspaceFolders[0].uri.fsPath;
     exec(cmd, path)
         .then(() => {
-            vscode.window.showInformationMessage(`Successfully complied`)
+            vscode.window.showInformationMessage(`Successfully compiled`)
         }).catch((reason) => {
             commandOutput.appendLine(`> ERROR: ${reason}`);
             vscode.window.showErrorMessage(reason, 'Show Output')
@@ -174,13 +174,13 @@ export function mbedCompileProject() {
 }
 
 export function mbedCompileAndFlashProject() {
-    const cmd = generateCommand();
+    const cmd = generateCommand() + ' -f'; 
     const folder = vscode.workspace.workspaceFolders;
 
-    const path = vscode.workspace.workspaceFolders[0].uri.path;
+    const path = vscode.workspace.workspaceFolders[0].uri.fsPath;
     exec(cmd, path)
         .then(() => {
-            vscode.window.showInformationMessage(`Successfully complied`)
+            vscode.window.showInformationMessage(`Successfully compiled`)
         }).catch((reason) => {
             commandOutput.appendLine(`> ERROR: ${reason}`);
             vscode.window.showErrorMessage(reason, 'Show Output')
