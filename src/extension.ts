@@ -30,7 +30,7 @@ export function activate(context: vscode.ExtensionContext) {
 
     flashIcon = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left);
     flashIcon.text = `$(circuit-board) flash`;
-    flashIcon.tooltip = 'Flash complied mbed binary into board';
+    flashIcon.tooltip = 'Flash compiled mbed binary into board';
     flashIcon.command = 'extension.mbed.flash';        
     flashIcon.show();
 
@@ -165,7 +165,7 @@ export function mbedCompileProject() {
     const path = vscode.workspace.workspaceFolders[0].uri.fsPath;
     exec(cmd, path)
         .then(() => {
-            vscode.window.showInformationMessage(`Successfully complied`)
+            vscode.window.showInformationMessage(`Successfully compiled`)
         }).catch((reason) => {
             commandOutput.appendLine(`> ERROR: ${reason}`);
             vscode.window.showErrorMessage(reason, 'Show Output')
@@ -180,7 +180,7 @@ export function mbedCompileAndFlashProject() {
     const path = vscode.workspace.workspaceFolders[0].uri.fsPath;
     exec(cmd, path)
         .then(() => {
-            vscode.window.showInformationMessage(`Successfully complied`)
+            vscode.window.showInformationMessage(`Successfully compiled`)
         }).catch((reason) => {
             commandOutput.appendLine(`> ERROR: ${reason}`);
             vscode.window.showErrorMessage(reason, 'Show Output')
